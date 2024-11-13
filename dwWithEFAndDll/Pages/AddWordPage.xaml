@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="dwWithEFAndDll.Pages.AddWordPage"
+             Title="AddWordPage">
+    <VerticalStackLayout>
+        <Label 
+    Text="Enter new word"
+    VerticalOptions="Center" 
+    HorizontalOptions="Center" />
+        <Entry
+            x:Name="wordEntryField"
+            Placeholder="Enter new word"
+            MaxLength="30"/>
+        <Label 
+    Text="Enter translate"
+    VerticalOptions="Center" 
+    HorizontalOptions="Center" />
+        <Entry
+            x:Name="translationEntryField"
+            Placeholder="Enter translation"
+            MaxLength="200"/>
+        <Button
+    Text="Write to dictionary"
+    SemanticProperties.Hint="Add new word to dictionary"
+    Clicked="AddNewWordToDictionary"
+    />
+    </VerticalStackLayout>
+</ContentPage>
