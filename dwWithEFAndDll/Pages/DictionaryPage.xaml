@@ -3,26 +3,31 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="dwWithEFAndDll.Pages.DictionaryPage"
              Title="DictionaryPage">
-    <VerticalStackLayout>
+    <VerticalStackLayout VerticalOptions="FillAndExpand">
         <Label 
             Text="Welcome to .NET MAUI!"
             VerticalOptions="Center" 
             HorizontalOptions="Center" />
 
-        <ListView ItemsSource="{Binding wwtVM.words}">
+        <ListView Grid.Row="1" 
+                  ItemsSource="{Binding watTranslations}" 
+                  VerticalOptions="FillAndExpand"
+                  HeightRequest="{OnPlatform Android=600, iOS=400, MacCatalyst=400}">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
                         <StackLayout Orientation="Horizontal" Spacing="5">
                             <Label
-                                    Text="{Binding Word}" 
-                                    FontFamily="Bold"
-                                    FontAttributes="Bold"
-                                    HorizontalOptions="Start" />
-
+                                Text="{Binding word.word}" 
+                                FontFamily="Bold"
+                                FontAttributes="Bold"
+                                HorizontalOptions="Start" />
                             <Label
-                                    Text="{Binding Translation}" 
-                                    HorizontalOptions="Start" />
+                                Text=" - " 
+                                HorizontalOptions="Start" />
+                            <Label
+                                Text="{Binding translationsString}" 
+                                HorizontalOptions="Start" />
                         </StackLayout>
                     </ViewCell>
                 </DataTemplate>
@@ -30,3 +35,15 @@
         </ListView>
     </VerticalStackLayout>
 </ContentPage>
+<!--ListView ItemsSource="{Binding translations}">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <ViewCell>
+                                            <Label
+                                                Text="{Binding translation}"
+                                                HorizontalOptions="Start" />
+                                        </ViewCell>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView-->
+<!--работает-->

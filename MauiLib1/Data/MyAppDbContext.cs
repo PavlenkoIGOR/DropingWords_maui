@@ -1,5 +1,6 @@
 ﻿using MauiLib1.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MauiLib1.Data;
 
@@ -21,6 +22,10 @@ public class MyAppDbContext : DbContext
             .HasMany(w => w.translations)
             .WithMany(t => t.words)
             .UsingEntity(j => j.ToTable("WordTranslation")); // Создаем новую таблицу для хранения отношений
+
+        builder.Entity<Word>()
+            .HasIndex(ind => ind.word)
+            .HasDatabaseName("idx_words");
     }
 }
 

@@ -11,9 +11,11 @@ namespace dwWithEFAndDll.ViewModels
     {
         public Word? word { get; set; }
         public List<Translation> translations { get; set; }
+        public StringBuilder? translationsString { get; set; }
         public WordAndTranslations()
         {
             translations = new List<Translation>();
+            translationsString = new StringBuilder();
         }
     }
 }

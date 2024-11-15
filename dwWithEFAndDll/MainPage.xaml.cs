@@ -23,6 +23,6 @@ public partial class MainPage : ContentPage
 
     async void OnstartLearnClicked(object sender, EventArgs e)
     {
-        await Navigation.PushAsync(new LearningPage());
+        await Navigation.PushAsync(new ChooseWordsPage());
     }
 }

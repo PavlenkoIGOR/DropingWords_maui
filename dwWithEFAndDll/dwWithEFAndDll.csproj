@@ -67,8 +67,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="Pages\LearningPage.xaml.cs">
-	    <DependentUpon>LearningPage.xaml</DependentUpon>
+	  <Compile Update="Pages\ChooseWordsPage.xaml.cs">
+	    <DependentUpon>ChooseWordsPage.xaml</DependentUpon>
 	  </Compile>
 	</ItemGroup>
 
@@ -79,7 +79,10 @@
 	  <MauiXaml Update="Pages\DictionaryPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Pages\LearningPage.xaml">
+	  <MauiXaml Update="Pages\ChooseWordsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\NewContent1.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>
