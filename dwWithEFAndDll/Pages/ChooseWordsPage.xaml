@@ -2,13 +2,47 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="dwWithEFAndDll.Pages.ChooseWordsPage"
-             xmlns:partial="clr-namespace:dwWithEFAndDll.Pages"
              Title="ChooseWordsPage">
     <VerticalStackLayout>
-        <Entry
-            Placeholder="Choose a nessessory words"/>
-        <partial:NewContent1/>
+        <Label Text="Поиск слова:"
+               FontSize="Medium" />
+
+        <Entry x:Name="searchEntry"
+               Placeholder="Введите слово"
+               TextChanged="OnSearchTextChanged" />
+
+        <ListView x:Name="wordsListView" 
+                  ItemSelected="OnWordSelected">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell >
+                        <StackLayout Orientation="Horizontal" Padding="10">
+                            <Label Text="{Binding word}"
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="FillAndExpand" />
+                            <Button Text="Add"
+                                    
+                                    FontSize="22"
+                                    TextColor="Black"
+                                    Clicked="OnAddButtonClicked"
+                                    CommandParameter="{Binding .}"
+                                    HorizontalOptions="End" 
+                                    IsEnabled="{Binding IsAddBttnEnabled}"/>
 
 
+                            <!--Button Text="Cancel"
+                                    TextColor="Black"
+                                    Clicked="OnCancelButtonClicked"
+                                    CommandParameter="{Binding .}"
+                                    HorizontalOptions="End" 
+                                    IsEnabled="{Binding IsCanselBttnEnabled}"/-->
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <Button Text="Start"
+                TextColor="Black"
+                Clicked="GoToLearnPage"/>
     </VerticalStackLayout>
 </ContentPage>

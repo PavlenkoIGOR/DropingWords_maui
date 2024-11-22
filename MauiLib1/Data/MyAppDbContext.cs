@@ -1,6 +1,5 @@
 ﻿using MauiLib1.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MauiLib1.Data;
 
