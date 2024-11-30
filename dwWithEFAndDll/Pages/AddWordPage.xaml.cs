@@ -18,7 +18,7 @@ public partial class AddWordPage : ContentPage
         
         if (_dbContext.Words.Any(w=>w.word.ToLower() == wordEntryField.Text.ToLower()))
         {
-            /*показать модальное окно с текстом "“акое слово есть в словаре!"*/
+            //показать модальное окно с текстом "“акое слово есть в словаре!"
             await DisplayAlert("ѕредупреждение", "“акое слово есть в словаре!", "Ok");
             
             return;

@@ -47,6 +47,7 @@ public partial class ChooseWordsPage : ContentPage
         if (e.SelectedItem is Word selectedWord)
         {
             // Действия при выборе слова, например, переход на другую страницу или отображение информации о слове
+            DisplayAlert("Окно выбора", "Выбрать это слово?", "Да", "Нет");
         }
     }
 

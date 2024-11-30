@@ -12,6 +12,7 @@ namespace dwWithEFAndDll.ViewModels
         
         public List<Word> wordsInVM { get; set; } = null!;
         public List<Translation> translationInVM { get; set; } = null!;
+        public bool isActive { get; set; } = true;
 
         public WordsWithTranslationsViewModel()
         {
