@@ -25,7 +25,6 @@ namespace MauiLib1.Services
             {
                 _connectionString = $"Data Source = {Path.Combine(FileSystem.AppDataDirectory, dbName)}";
             }
-
             return _connectionString;
         }
     }

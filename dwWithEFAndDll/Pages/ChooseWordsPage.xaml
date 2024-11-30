@@ -20,15 +20,14 @@
                             <Label Text="{Binding word}"
                                    VerticalOptions="Center"
                                    HorizontalOptions="FillAndExpand" />
-                            <Button Text="Add"
+                            <!--Button Text="Add"
                                     
                                     FontSize="22"
                                     TextColor="Black"
                                     Clicked="OnAddButtonClicked"
                                     CommandParameter="{Binding .}"
                                     HorizontalOptions="End" 
-                                    IsEnabled="{Binding IsAddBttnEnabled}"/>
-
+                                    IsEnabled="{Binding IsAddBttnEnabled}"/-->
 
                             <!--Button Text="Cancel"
                                     TextColor="Black"
@@ -41,6 +40,22 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+        <Grid x:Name="GridForCoosenWords">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+        </Grid>
         <Button Text="Start"
                 TextColor="Black"
                 Clicked="GoToLearnPage"/>

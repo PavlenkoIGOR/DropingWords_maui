@@ -41,13 +41,47 @@ public partial class ChooseWordsPage : ContentPage
             .ToListAsync();
     }
 
-    private void OnWordSelected(object sender, SelectedItemChangedEventArgs e)
+    private async void OnWordSelected(object sender, SelectedItemChangedEventArgs e)
     {
+        // очищаем существующие кнопки в сетке
+        GridForCoosenWords.Children.Clear();
+        int rowCount = 0;
+        int columnCount = 0;
+        int columns = 2; // Задайте количество столбцов
         // Обработка выбора слова, если необходимо
         if (e.SelectedItem is Word selectedWord)
         {
             // Действия при выборе слова, например, переход на другую страницу или отображение информации о слове
-            DisplayAlert("Окно выбора", "Выбрать это слово?", "Да", "Нет");
+            bool answer =  await  DisplayAlert("Окно выбора", "Выбрать это слово?", "Да", "Нет");
+            if (answer)
+            {
+                Word choosingWord = e.SelectedItem as Word;
+                _choosingWords.Add(choosingWord);
+            }
+        }
+
+        // Проходим по словам и добавляем кнопки в сетку
+        for (int i = 0; i < _choosingWords.Count; i++)
+        {
+            // Создаем кнопку
+            Button button = new Button();
+            button.Text = _choosingWords[i].word;
+            
+
+            // Устанавливаем ячейку для кнопки
+            Grid.SetRow(button, rowCount);
+            Grid.SetColumn(button, columnCount);
+
+            // Добавляем кнопку в сетку
+            GridForCoosenWords.Children.Add(button);
+
+            // Обновляем индексы строк и столбцов
+            columnCount++;
+            if (columnCount >= columns) // Если достигли максимума столбцов
+            {
+                columnCount = 0;
+                rowCount++; // Переходим на следующую строку
+            }
         }
     }
 

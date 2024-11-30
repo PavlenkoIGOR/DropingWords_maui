@@ -1,5 +1,9 @@
 ﻿using MauiLib1.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Maui.Storage;
+using System.Reflection;
+using System.Text.Json;
+using System.Xml.Linq;
 
 namespace MauiLib1.Data;
 
@@ -14,9 +18,16 @@ public class MyAppDbContext : DbContext
         this.Database.EnsureCreated();
     }
 
-    protected override void OnModelCreating(ModelBuilder builder)
+    protected async override void OnModelCreating(ModelBuilder builder)
     {
-        base.OnModelCreating(builder);
+        //var assembly = Assembly.GetExecutingAssembly();
+        //var resourceName = "Dictionary.json"; // Убедитесь, что путь к ресурсу указан правильно
+
+        //var file = Path.Combine(FileSystem.AppDataDirectory, resourceName);
+        //using var streamReader = new StreamReader(file);
+
+
+        //base.OnModelCreating(builder);
         builder.Entity<Word>()
             .HasMany(w => w.translations)
             .WithMany(t => t.words)
