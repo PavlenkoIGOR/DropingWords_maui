@@ -37,28 +37,33 @@ public partial class ChooseWordsPage : ContentPage
     private async Task<List<Word>> SearchWordsAsync(string searchText)
     {
         return await _db.Words
-            .Where(w => w.word.Contains(searchText))
+            .Where(w => w.word.StartsWith(searchText))
             .ToListAsync();
     }
 
     private async void OnWordSelected(object sender, SelectedItemChangedEventArgs e)
     {
-        // очищаем существующие кнопки в сетке
-        GridForCoosenWords.Children.Clear();
-        int rowCount = 0;
-        int columnCount = 0;
-        int columns = 2; // Задайте количество столбцов
         // Обработка выбора слова, если необходимо
         if (e.SelectedItem is Word selectedWord)
         {
             // Действия при выборе слова, например, переход на другую страницу или отображение информации о слове
-            bool answer =  await  DisplayAlert("Окно выбора", "Выбрать это слово?", "Да", "Нет");
+            bool answer = await DisplayAlert("Окно выбора", "Выбрать это слово?", "Да", "Нет");
             if (answer)
             {
                 Word choosingWord = e.SelectedItem as Word;
                 _choosingWords.Add(choosingWord);
             }
         }
+        FillGridForChoosenWords();
+    }
+
+    private async void FillGridForChoosenWords()
+    {
+        // очищаем существующие кнопки в сетке
+        GridForCoosenWords.Children.Clear();
+        int rowCount = 0;
+        int columnCount = 0;
+        int columns = 2; // Задайте количество столбцов
 
         // Проходим по словам и добавляем кнопки в сетку
         for (int i = 0; i < _choosingWords.Count; i++)
@@ -66,7 +71,23 @@ public partial class ChooseWordsPage : ContentPage
             // Создаем кнопку
             Button button = new Button();
             button.Text = _choosingWords[i].word;
-            
+
+            // Сохраняем текущее значение индекса i в локальной переменной
+            int index = i;
+
+            // Обработчик нажатия кнопки
+            button.Clicked += async (s, e) =>
+            {
+                bool answer2 = await DisplayAlert("Окно выбора", "Удалить это слово?", "Да", "Нет");
+                if (answer2)
+                {
+                    // Удаляем слово из списка
+                    _choosingWords.RemoveAt(index);
+
+                    // Обновляем Grid после удаления
+                    FillGridForChoosenWords();
+                }
+            };
 
             // Устанавливаем ячейку для кнопки
             Grid.SetRow(button, rowCount);
@@ -109,7 +130,7 @@ public partial class ChooseWordsPage : ContentPage
 
     async void GoToLearnPage(object sender, EventArgs e)
     {
-        await Navigation.PushAsync(new LearnPage());
+        await Navigation.PushAsync(new LearnPage(_choosingWords));
     }
 }
 

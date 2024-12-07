@@ -3,10 +3,61 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="dwWithEFAndDll.Pages.LearnPage"
              Title="LearnPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition>
+            </ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+
+            <RowDefinition Height="360">
+            </RowDefinition>
+            
+            <RowDefinition Height="60">
+            </RowDefinition>
+            
+            <RowDefinition Height="*">
+            </RowDefinition>
+            
+        </Grid.RowDefinitions>
+
+        <Label x:Name="wordLabel"  Text="{Binding currentWord}" Grid.Row="0" BackgroundColor="Yellow" TextColor="Black" FontSize="60" 
+               HorizontalOptions="Fill" HorizontalTextAlignment="Center"
+               VerticalTextAlignment="Center" VerticalOptions="Fill"/>
+
+        <AbsoluteLayout x:Name="absLayOut"    
+                        Grid.Row="1" VerticalOptions="Fill" HorizontalOptions="Fill">
+            <!--ProgressBar x:Name="ProgrBar"
+                         AbsoluteLayout.LayoutBounds="0,0,1,1"
+                         AbsoluteLayout.LayoutFlags="All"
+                         ProgressColor="BlueViolet"
+                         BackgroundColor="Coral"
+                         Progress="0.5"/-->
+            <BoxView Color="Black"
+                     AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
+                     AbsoluteLayout.LayoutFlags="All" />
+        </AbsoluteLayout>
+
+
+        <Grid x:Name="GridForTranslations" Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Button Grid.Row="1" Grid.Column="1" Text="Translate" VerticalOptions="Fill" HorizontalOptions="Fill"/>
+        </Grid>
+
+
+    </Grid>
 </ContentPage>

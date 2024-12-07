@@ -37,7 +37,7 @@ public partial class DictionaryPage : ContentPage
 
 		//var currList = _dbContext.Words.Include(id => id.translations).ToListAsync();
 
-		words = await _dbContext.Words.Include(w => w.translations).Select(a=>a).ToListAsync();
+		words = await _dbContext.Words.OrderBy(w => w.word).Include(w => w.translations).Select(a=>a).ToListAsync();
 		foreach (Word w in words)
 		{
             WordAndTranslations wat = new WordAndTranslations();
