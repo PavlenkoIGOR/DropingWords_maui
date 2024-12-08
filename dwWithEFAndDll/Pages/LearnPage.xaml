@@ -27,12 +27,6 @@
 
         <AbsoluteLayout x:Name="absLayOut"    
                         Grid.Row="1" VerticalOptions="Fill" HorizontalOptions="Fill">
-            <!--ProgressBar x:Name="ProgrBar"
-                         AbsoluteLayout.LayoutBounds="0,0,1,1"
-                         AbsoluteLayout.LayoutFlags="All"
-                         ProgressColor="BlueViolet"
-                         BackgroundColor="Coral"
-                         Progress="0.5"/-->
             <BoxView Color="Black"
                      AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
                      AbsoluteLayout.LayoutFlags="All" />
