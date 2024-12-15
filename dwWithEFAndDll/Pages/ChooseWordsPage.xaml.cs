@@ -1,3 +1,4 @@
+using dwWithEFAndDll.ViewModels;
 using MauiLib1.Data;
 using MauiLib1.Models;
 using Microsoft.EntityFrameworkCore;
@@ -8,11 +9,13 @@ public partial class ChooseWordsPage : ContentPage
 {
 	MyAppDbContext _db;
     List<Word> _choosingWords;
+    List<WordAndTranslationsLP> _wordAndTranslationsLP_list;
 
     public bool IsAddBttnEnabled { get; set; } = true;
     public bool IsCanselBttnEnabled { get; set; } = false;
     public ChooseWordsPage(MyAppDbContext myAppDb)
 	{
+        _wordAndTranslationsLP_list = new List<WordAndTranslationsLP>();
 		_db = myAppDb;
         _choosingWords = new List<Word>();
         InitializeComponent();
@@ -36,7 +39,7 @@ public partial class ChooseWordsPage : ContentPage
 
     private async Task<List<Word>> SearchWordsAsync(string searchText)
     {
-        return await _db.Words
+        return await _db.Words.Include(i=>i.translations)
             .Where(w => w.word.StartsWith(searchText))
             .ToListAsync();
     }
@@ -50,8 +53,15 @@ public partial class ChooseWordsPage : ContentPage
             bool answer = await DisplayAlert("Окно выбора", "Выбрать это слово?", "Да", "Нет");
             if (answer)
             {
+
                 Word choosingWord = e.SelectedItem as Word;
-                _choosingWords.Add(choosingWord);
+                _choosingWords.Add(choosingWord); //удалить?
+
+
+                WordAndTranslationsLP watLP = new WordAndTranslationsLP();
+                watLP.word = selectedWord.word;
+                watLP.translations = selectedWord.translations.Select(t=>t.translation).ToList();
+                _wordAndTranslationsLP_list.Add(watLP);
             }
         }
         FillGridForChoosenWords();
@@ -130,7 +140,13 @@ public partial class ChooseWordsPage : ContentPage
 
     async void GoToLearnPage(object sender, EventArgs e)
     {
-        await Navigation.PushAsync(new LearnPage(_choosingWords));
+        List<string> translations = await _db.Translations.Where(t=>t.translation != null).Select(t=>t.translation).ToListAsync();  
+        Random random = new Random();
+        List<string> randomTranslations = translations.OrderBy(x => random.Next()).Take(50).ToList();
+
+
+
+        await Navigation.PushAsync(new LearnPage(_choosingWords, _wordAndTranslationsLP_list, randomTranslations));
     }
 }
 

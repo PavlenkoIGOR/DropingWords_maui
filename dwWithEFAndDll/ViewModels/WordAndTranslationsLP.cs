@@ -3,14 +3,14 @@ using System.Text;
 
 namespace dwWithEFAndDll.ViewModels
 {
-    public class WordAndTranslations
+    public class WordAndTranslationsLP
     {
-        public Word? word { get; set; }
-        public ICollection<Translation> translations { get; set; }
+        public string? word { get; set; }
+        public ICollection<string> translations { get; set; }
         public StringBuilder? translationsString { get; set; }
-        public WordAndTranslations()
+        public WordAndTranslationsLP()
         {
-            translations = new List<Translation>();
+            translations = new List<string>();
             translationsString = new StringBuilder();
         }
     }

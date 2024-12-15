@@ -3,14 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="dwWithEFAndDll.Pages.LearnPage"
              Title="LearnPage">
-    <Grid>
+    <Grid VerticalOptions="Fill">
         <Grid.ColumnDefinitions>
             <ColumnDefinition>
             </ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
 
-            <RowDefinition Height="360">
+            <RowDefinition Height="160">
             </RowDefinition>
             
             <RowDefinition Height="60">
@@ -21,7 +21,7 @@
             
         </Grid.RowDefinitions>
 
-        <Label x:Name="wordLabel"  Text="{Binding currentWord}" Grid.Row="0" BackgroundColor="Yellow" TextColor="Black" FontSize="60" 
+        <Label x:Name="wordLabel"  Text="{Binding currentWord.word}" Grid.Row="0" BackgroundColor="Yellow" TextColor="Black" FontSize="60" 
                HorizontalOptions="Fill" HorizontalTextAlignment="Center"
                VerticalTextAlignment="Center" VerticalOptions="Fill"/>
 

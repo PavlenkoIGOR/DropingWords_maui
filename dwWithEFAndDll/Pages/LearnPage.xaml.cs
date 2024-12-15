@@ -1,17 +1,33 @@
+using dwWithEFAndDll.ViewModels;
 using MauiLib1.Models;
 using Microsoft.Maui.Layouts;
 using System.ComponentModel;
-using System.Diagnostics;
 
 namespace dwWithEFAndDll.Pages;
 
 public partial class LearnPage : ContentPage, INotifyPropertyChanged
 {
-    List<Word> _choosenWords;
+
+    List<string> _randomTranslations;
+    List<WordAndTranslationsLP> _wordAndTranslationsLP_list;
     IDispatcherTimer timer1;
 
-    private string _currentWord; // Изменили поля для использования понятия INotifyPropertyChanged
-    public string currentWord // Свойство для привязки
+    private WordAndTranslationsLP _currentWord; // Изменили поля для использования понятия INotifyPropertyChanged
+    public LearnPage(List<Word> choosenWords, List<WordAndTranslationsLP> watLP, List<string> randomTranslations)
+    {
+        currentWord = new WordAndTranslationsLP();
+        _wordAndTranslationsLP_list = watLP;
+        _randomTranslations = randomTranslations;
+
+        InitializeComponent();
+        PauseBttnCreation();// Добавляем кнопку на панель навигации
+        WordToLearn();
+        BindingContext = this;
+        BoxViewBisque();
+        AnimateBisqueBV();
+        FillGridForChoosenWords();
+    }
+    public WordAndTranslationsLP currentWord // Свойство для привязки
     {
         get => _currentWord;
         set
@@ -23,7 +39,7 @@ public partial class LearnPage : ContentPage, INotifyPropertyChanged
             }
         }
     }
-
+    public WordAndTranslationsLP wordAndTranslationsLP { get; set; }
     public BoxView? bisqueBV;
     public Label? labelTimer = new Label();
 
@@ -34,16 +50,7 @@ public partial class LearnPage : ContentPage, INotifyPropertyChanged
 
     public float timeRemain { get; set; } = 3.0f;
 
-    public LearnPage(List<Word> choosenWords)
-    {
-        _choosenWords = choosenWords;
-        InitializeComponent();
-        WordToLearn();
-        BindingContext = this;
-        BoxViewBisque();
-        AnimateBisqueBV();
-        FillGridForChoosenWords();
-    }
+
 
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -55,12 +62,16 @@ public partial class LearnPage : ContentPage, INotifyPropertyChanged
     public async void WordToLearn()
     {
         Random rnd = new Random();
-        int randomWordIndex = rnd.Next(0, _choosenWords.Count);
-        currentWord = _choosenWords[randomWordIndex].word;
+        int randomWordIndex = rnd.Next(0, _wordAndTranslationsLP_list.Count);
+        //currentWord = _choosenWords[randomWordIndex];
+        currentWord.word = _wordAndTranslationsLP_list[randomWordIndex].word;
         wordLabel.BackgroundColor = Colors.Yellow;
     }
 
-    private async void FillGridForChoosenWords()
+    /// <summary>
+    /// zapolnenie yacheiki c knopkami dlya variantov otveta
+    /// </summary>
+    async void FillGridForChoosenWords()
     {
         // очищаем существующие кнопки в сетке
         GridForTranslations.Children.Clear();
@@ -68,12 +79,34 @@ public partial class LearnPage : ContentPage, INotifyPropertyChanged
         int columnCount = 0;
         int columns = 2; // Задайте количество столбцов
 
+        #region create a list with random translations values
+        Random random1 = new Random();
+        List<string> rndSevenTranslations = _randomTranslations.OrderBy(t => random1.Next(_randomTranslations.Count)).Take(7).ToList();
+        #endregion
+
         // Проходим по словам и добавляем кнопки в сетку
-        for (int i = 0; i < _choosenWords.Count; i++)
+        for (int i = 0; i < _wordAndTranslationsLP_list.Count; i++)
         {
             // Создаем кнопку
             Button button = new Button();
-            button.Text = _choosenWords[i].word;
+            Random random = new Random();
+
+            //foreach (Translation item in _choosenWords[i].translations)
+            //{
+            //    random.Next(0, _choosenWords[i].translations.Count);
+            //    button.Text += item.translation;
+            //}
+            foreach (string item in _wordAndTranslationsLP_list[i].translations)
+            {
+                if (_wordAndTranslationsLP_list[i].translations.Count >= 2)
+                {
+                    button.Text += item;
+                }
+                else
+                {
+                    button.Text = item;
+                }
+            }
 
             // Сохраняем текущее значение индекса i в локальной переменной
             int index = i;
@@ -81,15 +114,15 @@ public partial class LearnPage : ContentPage, INotifyPropertyChanged
             // Обработчик нажатия кнопки
             button.Clicked += async (s, e) =>
             {
-                if ((s as Button).Text != currentWord)
+                if ((s as Button).Text != currentWord.word)
                 {
                     //wordLabel.BackgroundColor = Colors.Red;
-                    timer1.Stop(); // Запускаем таймер
+                    timer1.Stop(); // останавливаем таймер
                     await RedBGOfLabel(wordLabel);
                 }
                 else
                 {
-                    timer1.Stop(); // Запускаем таймер
+                    timer1.Stop(); // останавливаем таймер
                 }
                 fillMode_XEnd = 0;
                 timeRemain = 3.0f;
@@ -114,7 +147,7 @@ public partial class LearnPage : ContentPage, INotifyPropertyChanged
         }
     }
 
-
+    #region zapolnenie yacheiki v absolute layout cell dlya progressbar'a
     void BoxViewBisque()
     {
         bisqueBV = new BoxView()
@@ -140,13 +173,14 @@ public partial class LearnPage : ContentPage, INotifyPropertyChanged
     }
     void AnimateBisqueBV()
     {
+        double myInterval = 100;
         // Используем 50 миллисекунд для каждого шага
-        int steps = (int)(timeRemain * 1000 / 100);
+        int steps = (int)(timeRemain * 1000 / myInterval);
         float stepSize = 1.0f / steps; // Увеличение на каждый шаг
         float elapsedTime = 0;
 
         var timer = Dispatcher.CreateTimer();
-        timer.Interval = TimeSpan.FromMilliseconds(100);
+        timer.Interval = TimeSpan.FromMilliseconds(myInterval);
         timer.Tick += (s, e) =>
         {
             // Уменьшаем оставшееся время
@@ -172,38 +206,44 @@ public partial class LearnPage : ContentPage, INotifyPropertyChanged
 
     private void UpdateTimer()
     {
+        double interval = 100;
         TimeSpan countdown = TimeSpan.FromSeconds(timeRemain);
         timer1 = Dispatcher.CreateTimer();
-        timer1.Interval = TimeSpan.FromMilliseconds(100);
-        timer1.Start(); // Запускаем таймер
+        timer1.Interval = TimeSpan.FromMilliseconds(interval);
+
 
         timer1.Tick += (s, e) =>
         {
+            countdown = countdown.Subtract(timer1.Interval); // Уменьшаем оставшееся время на 100 мс
+
             if (countdown.TotalMilliseconds <= 0)
             {
                 labelTimer.Text = "00:00 cек.";
                 labelTimer.TextColor = Colors.Red;
-                labelTimer.FontAttributes = FontAttributes.Bold;
-                labelTimer.Opacity = 0.8f;
-                labelTimer.FontSize = 20;
-                labelTimer.HorizontalOptions = LayoutOptions.Center; // Центрируем по горизонтали
-                labelTimer.VerticalOptions = LayoutOptions.Center; // Центрируем по вертикали
                 timer1.Stop(); // Останавливаем таймер, когда время истекло
+                               // Запускаем таймер снова
+                UpdateTimer(); // Перезапускаем таймер, можно изменить это по необходимости
             }
             else
             {
-                countdown = countdown.Subtract(TimeSpan.FromMilliseconds(100)); // Уменьшаем оставшееся время на 100 мс
                 labelTimer.Text = $"{countdown.Seconds:D2}:{countdown.Milliseconds / 10:D2} сек."; // Обновите текст метки
                 labelTimer.TextColor = Colors.White; // Цвет метки
-                labelTimer.FontAttributes = FontAttributes.Bold;
-                labelTimer.Opacity = 0.8f;
-                labelTimer.FontSize = 20;
-                labelTimer.HorizontalOptions = LayoutOptions.Center; // Центрируем по горизонтали
-                labelTimer.VerticalOptions = LayoutOptions.Center; // Центрируем по вертикали
             }
+            labelTimer.FontAttributes = FontAttributes.Bold;
+            //labelTimer.Opacity = 0.8f;
+            labelTimer.FontSize = 30;
+            labelTimer.HorizontalOptions = LayoutOptions.Center; // Центрируем по горизонтали
+            labelTimer.VerticalOptions = LayoutOptions.Center; // Центрируем по вертикали
         };
+        timer1.Start(); // Запускаем таймер
     }
+    #endregion
 
+    /// <summary>
+    /// method dlya izmeneniya fona c klychevym slovom v sluchae nepravilnogo otveta
+    /// </summary>
+    /// <param name="currLabel">nujnyi Label</param>
+    /// <returns></returns>
     async Task RedBGOfLabel(Label currLabel)
     {
         float duration = 0.2f;
@@ -239,10 +279,10 @@ public partial class LearnPage : ContentPage, INotifyPropertyChanged
                 startColor.Green + (endColor.Green - startColor.Green) * progress,
                 startColor.Blue + (endColor.Blue - startColor.Blue) * progress);
 
-                currLabel.BackgroundColor = currentColor;
+            currLabel.BackgroundColor = currentColor;
 
-                await Task.Delay(interval);
-                stepCounter++;
+            await Task.Delay(interval);
+            stepCounter++;
         };
 
         // Убедитесь, что цвет точно установлен в конечный цвет
@@ -250,107 +290,22 @@ public partial class LearnPage : ContentPage, INotifyPropertyChanged
         redBG_dispatcher.Start();
         await tcs.Task; // Ожидание завершения работы метода
     }
-}
 
-
-
-
-
-
-/*
-
-using MauiLib1.Models;
-using Microsoft.Maui.Layouts;
-
-namespace dwWithEFAndDll.Pages;
-
-public partial class LearnPage : ContentPage
-{
-    List<Word> _choosenWords;
-    IDispatcherTimer timer1;
-    public string currentWord { get; set; }
-    public BoxView? bisqueBV;
-    public Label? labelTimer = new Label() ;
-
-    public float fillMode_XStart { get; set; } = 0;
-    public float fillMode_YStart { get; set; } = 0;
-    public float fillMode_XEnd { get; set; } = 0;
-    public float fillMode_YEnd { get; set; } = 1.0f;
-
-    public float timeRemain { get; set; } = 3.0f;
-
-    public LearnPage(List<Word> choosenWords)
+    /// <summary>
+    /// method for pause buttn creation
+    /// </summary>
+    void PauseBttnCreation()
     {
-        _choosenWords = choosenWords;
-        InitializeComponent();
-        WordToLearn();
-        BindingContext = this;
-        BoxViewBisque();
-        AnimateBisqueBV();
-        FillGridForChoosenWords();
-    }
-    public async void WordToLearn()
-    {
-        Random rnd = new Random();
-        int randomWordIndex = rnd.Next(0, _choosenWords.Count);
-        currentWord = _choosenWords[randomWordIndex].word;
-        wordLabel.BackgroundColor = Colors.Yellow;
-    }
-
-    private async void FillGridForChoosenWords()
-    {
-        // очищаем существующие кнопки в сетке
-        GridForTranslations.Children.Clear();
-        int rowCount = 0;
-        int columnCount = 0;
-        int columns = 2; // Задайте количество столбцов
-
-        // Проходим по словам и добавляем кнопки в сетку
-        for (int i = 0; i < _choosenWords.Count; i++)
+        var pauseButton = new ToolbarItem()
         {
-            // Создаем кнопку
-            Button button = new Button();
-            button.Text = _choosenWords[i].word;
-
-            // Сохраняем текущее значение индекса i в локальной переменной
-            int index = i;
-
-            // Обработчик нажатия кнопки
-            button.Clicked += async (s, e) =>
-            {
-                if ((s as Button).Text == currentWord)
-                {
-                    //await DisplayAlert("ww", "Правильно", "Cansel");
-                    WordToLearn();
-                }
-                else
-                {
-                    wordLabel.BackgroundColor = Colors.Red;
-
-                }
-
-                timer1.Stop(); // Запускаем таймер
-                fillMode_XEnd = 0;
-                timeRemain = 3.0f;
-                UpdateTimer();
-            };
-
-            // Устанавливаем ячейку для кнопки
-            Grid.SetRow(button, rowCount);
-            Grid.SetColumn(button, columnCount);
-
-            // Добавляем кнопку в сетку
-            GridForTranslations.Children.Add(button);
-
-            // Обновляем индексы строк и столбцов
-            columnCount++;
-            if (columnCount >= columns) // Если достигли максимума столбцов
-            {
-                columnCount = 0;
-                rowCount++; // Переходим на следующую строку
-            }
-        }
+            Text = "Pause",
+            Priority = 0,
+            Order = ToolbarItemOrder.Primary
+        };
+        pauseButton.Clicked += async (s, e) =>
+        {
+            await DisplayAlert("Pause", "Pause menu", "Cancel");
+        };
+        this.ToolbarItems.Add(pauseButton); // Добавляем кнопку на панель навигации
     }
 }
- 
- */
