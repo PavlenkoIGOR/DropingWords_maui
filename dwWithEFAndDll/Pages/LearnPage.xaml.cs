@@ -9,15 +9,16 @@ public partial class LearnPage : ContentPage, INotifyPropertyChanged
 {
 
     List<string> _randomTranslations;
-    List<WordAndTranslationsLP> _wordAndTranslationsLP_list;
+    List<WordAndTranslationsLP> _choosenWordAndTranslationsLP_list;
     IDispatcherTimer timer1;
 
     private WordAndTranslationsLP _currentWord; // Изменили поля для использования понятия INotifyPropertyChanged
     public LearnPage(List<Word> choosenWords, List<WordAndTranslationsLP> watLP, List<string> randomTranslations)
     {
         currentWord = new WordAndTranslationsLP();
-        _wordAndTranslationsLP_list = watLP;
+        _choosenWordAndTranslationsLP_list = watLP;
         _randomTranslations = randomTranslations;
+        tmpTimeRemain = timeRemain;
 
         InitializeComponent();
         PauseBttnCreation();// Добавляем кнопку на панель навигации
@@ -49,6 +50,7 @@ public partial class LearnPage : ContentPage, INotifyPropertyChanged
     public float fillMode_YEnd { get; set; } = 1.0f;
 
     public float timeRemain { get; set; } = 3.0f;
+    private float tmpTimeRemain;
 
 
 
@@ -62,9 +64,17 @@ public partial class LearnPage : ContentPage, INotifyPropertyChanged
     public async void WordToLearn()
     {
         Random rnd = new Random();
-        int randomWordIndex = rnd.Next(0, _wordAndTranslationsLP_list.Count);
+        int randomWordIndex = rnd.Next(0, _choosenWordAndTranslationsLP_list.Count);
         //currentWord = _choosenWords[randomWordIndex];
-        currentWord.word = _wordAndTranslationsLP_list[randomWordIndex].word;
+        currentWord = _choosenWordAndTranslationsLP_list[randomWordIndex];
+        if (currentWord.translations.Count > 1)
+        {
+            currentWord.translation = currentWord.translations[rnd.Next(currentWord.translations.Count)];
+        }
+        else
+        {
+            currentWord.translation = currentWord.translations[0];
+        }
         wordLabel.BackgroundColor = Colors.Yellow;
     }
 
@@ -73,48 +83,38 @@ public partial class LearnPage : ContentPage, INotifyPropertyChanged
     /// </summary>
     async void FillGridForChoosenWords()
     {
+        byte[][] cellCoord = { [0, 0], [0, 1], [1, 0], [1, 1], [2, 0], [2, 1], [3, 0], [3, 1] };
+
+        Random random = new Random();
+        byte[][] shuffledCellCoords = cellCoord.Cast<byte[]>().OrderBy(x => random.Next()).ToArray();
+        //var shuffledCellCoords = cellCoord.Cast<byte[]>().OrderBy(x => random.Next()).ToArray();
+
         // очищаем существующие кнопки в сетке
         GridForTranslations.Children.Clear();
+        /*
         int rowCount = 0;
         int columnCount = 0;
         int columns = 2; // Задайте количество столбцов
-
+        */
         #region create a list with random translations values
         Random random1 = new Random();
-        List<string> rndSevenTranslations = _randomTranslations.OrderBy(t => random1.Next(_randomTranslations.Count)).Take(7).ToList();
+        List<string> rndSevenTranslationsAndCurrentTranslation = _randomTranslations.OrderBy(t => random1.Next(_randomTranslations.Count)).Take(7).ToList();
+        rndSevenTranslationsAndCurrentTranslation.Add(currentWord.translation);
         #endregion
 
         // Проходим по словам и добавляем кнопки в сетку
-        for (int i = 0; i < _wordAndTranslationsLP_list.Count; i++)
+        for (int i = 0; i < rndSevenTranslationsAndCurrentTranslation.Count; i++)
         {
             // Создаем кнопку
             Button button = new Button();
-            Random random = new Random();
 
-            //foreach (Translation item in _choosenWords[i].translations)
-            //{
-            //    random.Next(0, _choosenWords[i].translations.Count);
-            //    button.Text += item.translation;
-            //}
-            foreach (string item in _wordAndTranslationsLP_list[i].translations)
-            {
-                if (_wordAndTranslationsLP_list[i].translations.Count >= 2)
-                {
-                    button.Text += item;
-                }
-                else
-                {
-                    button.Text = item;
-                }
-            }
-
+            button.Text = rndSevenTranslationsAndCurrentTranslation[i];
             // Сохраняем текущее значение индекса i в локальной переменной
             int index = i;
-
             // Обработчик нажатия кнопки
             button.Clicked += async (s, e) =>
             {
-                if ((s as Button).Text != currentWord.word)
+                if ((s as Button).Text != currentWord.translation)
                 {
                     //wordLabel.BackgroundColor = Colors.Red;
                     timer1.Stop(); // останавливаем таймер
@@ -124,19 +124,21 @@ public partial class LearnPage : ContentPage, INotifyPropertyChanged
                 {
                     timer1.Stop(); // останавливаем таймер
                 }
+
                 fillMode_XEnd = 0;
-                timeRemain = 3.0f;
+                timeRemain = tmpTimeRemain;
                 UpdateTimer();
                 WordToLearn();
+                FillGridForChoosenWords();
             };
 
+            #region для обычного создания таблицы 8 строк и 2 столбца
+            /*
             // Устанавливаем ячейку для кнопки
             Grid.SetRow(button, rowCount);
             Grid.SetColumn(button, columnCount);
-
             // Добавляем кнопку в сетку
             GridForTranslations.Children.Add(button);
-
             // Обновляем индексы строк и столбцов
             columnCount++;
             if (columnCount >= columns) // Если достигли максимума столбцов
@@ -144,6 +146,17 @@ public partial class LearnPage : ContentPage, INotifyPropertyChanged
                 columnCount = 0;
                 rowCount++; // Переходим на следующую строку
             }
+            */
+            #endregion
+
+            #region для случайного распределения кнопок 
+            // Устанавливаем координаты кнопки из перемешанного массива координат
+            int row = shuffledCellCoords[i][0];
+            int column = shuffledCellCoords[i][1];
+            Grid.SetRow(button, row);
+            Grid.SetColumn(button, column);
+            GridForTranslations.Children.Add(button);
+            #endregion
         }
     }
 
@@ -206,6 +219,7 @@ public partial class LearnPage : ContentPage, INotifyPropertyChanged
 
     private void UpdateTimer()
     {
+
         double interval = 100;
         TimeSpan countdown = TimeSpan.FromSeconds(timeRemain);
         timer1 = Dispatcher.CreateTimer();
@@ -216,13 +230,14 @@ public partial class LearnPage : ContentPage, INotifyPropertyChanged
         {
             countdown = countdown.Subtract(timer1.Interval); // Уменьшаем оставшееся время на 100 мс
 
-            if (countdown.TotalMilliseconds <= 0)
+            if (countdown.TotalMilliseconds <= 0.1)
             {
                 labelTimer.Text = "00:00 cек.";
                 labelTimer.TextColor = Colors.Red;
                 timer1.Stop(); // Останавливаем таймер, когда время истекло
                                // Запускаем таймер снова
-                UpdateTimer(); // Перезапускаем таймер, можно изменить это по необходимости
+                timeRemain = tmpTimeRemain;
+                UpdateTimer();
             }
             else
             {
@@ -281,11 +296,11 @@ public partial class LearnPage : ContentPage, INotifyPropertyChanged
 
             currLabel.BackgroundColor = currentColor;
 
-            await Task.Delay(interval);
+            await Task.Delay(redBG_dispatcher.Interval);
             stepCounter++;
         };
 
-        // Убедитесь, что цвет точно установлен в конечный цвет
+        // Убедимся, что цвет точно установлен в конечный цвет
         currLabel.BackgroundColor = endColor;
         redBG_dispatcher.Start();
         await tcs.Task; // Ожидание завершения работы метода

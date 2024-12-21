@@ -6,7 +6,8 @@ namespace dwWithEFAndDll.ViewModels
     public class WordAndTranslationsLP
     {
         public string? word { get; set; }
-        public ICollection<string> translations { get; set; }
+        public List<string> translations { get; set; }
+        public string? translation { get; set; }
         public StringBuilder? translationsString { get; set; }
         public WordAndTranslationsLP()
         {

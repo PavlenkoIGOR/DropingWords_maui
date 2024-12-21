@@ -140,7 +140,26 @@ public partial class ChooseWordsPage : ContentPage
 
     async void GoToLearnPage(object sender, EventArgs e)
     {
-        List<string> translations = await _db.Translations.Where(t=>t.translation != null).Select(t=>t.translation).ToListAsync();  
+        /* вкоде ниже ошибка System.InvalidOperationException: "The LINQ expression 's => s.translations' could not be translated. Either rewrite the query in a form that can be translated, 
+         * or switch to client evaluation explicitly by inserting a call to 'AsEnumerable', 'AsAsyncEnumerable', 'ToList', or 'ToListAsync'. 
+         * See https://go.microsoft.com/fwlink/?linkid=2101038 for more information."
+        List<string> translations = await _db.Translations
+            .Where(t=>t.translation != null &&
+                                !_wordAndTranslationsLP_list.SelectMany(s=>s.translations).Contains(t.translation))
+            .Select(t=>t.translation)
+            .ToListAsync(); // из-за что Entity Framework не может перевести такой запрос с использованием SelectMany на SQL. поэтому надо разложить на два запроса
+        */
+
+        // —начала получим все переводы в список
+        var excludedTranslations = _wordAndTranslationsLP_list
+            .SelectMany(s => s.translations)
+            .ToList();
+
+        // “еперь используем этот список в запросе
+        List<string> translations = await _db.Translations
+            .Where(t => t.translation != null && !excludedTranslations.Contains(t.translation))
+            .Select(t => t.translation)
+            .ToListAsync();
         Random random = new Random();
         List<string> randomTranslations = translations.OrderBy(x => random.Next()).Take(50).ToList();
 
