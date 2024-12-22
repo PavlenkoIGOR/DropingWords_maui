@@ -1,5 +1,7 @@
+using dwWithEFAndDll.Pages.ContentPages;
 using dwWithEFAndDll.ViewModels;
 using MauiLib1.Models;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Layouts;
 using System.ComponentModel;
 
@@ -48,8 +50,9 @@ public partial class LearnPage : ContentPage, INotifyPropertyChanged
     public float fillMode_YStart { get; set; } = 0;
     public float fillMode_XEnd { get; set; } = 0;
     public float fillMode_YEnd { get; set; } = 1.0f;
+    private float _startProgressBarPos { get; set; } = 0;
 
-    public float timeRemain { get; set; } = 3.0f;
+    public float timeRemain { get; set; } = 4.0f;
     private float tmpTimeRemain;
 
 
@@ -174,6 +177,7 @@ public partial class LearnPage : ContentPage, INotifyPropertyChanged
         absLayOut.Children.Add(bisqueBV);
         absLayOut.Children.Add(labelTimer);
     }
+
     void UpdateBoxViewLayout(float XEnd)
     {
         // x = 0 (слева), y = 0 (вверху), width = 0.5 (50% ширины), height = 1 (100% высоты)
@@ -184,6 +188,10 @@ public partial class LearnPage : ContentPage, INotifyPropertyChanged
         AbsoluteLayout.SetLayoutBounds(labelTimer, new Rect(0, 0, 1, 1)); // Задаем границы (0-1 для ширины и высоты)
         AbsoluteLayout.SetLayoutFlags(labelTimer, AbsoluteLayoutFlags.All); // Указываем, что границы относительно родителя
     }
+
+    /// <summary>
+    /// Анимация прогрессбрара
+    /// </summary>
     void AnimateBisqueBV()
     {
         double myInterval = 100;
@@ -217,14 +225,15 @@ public partial class LearnPage : ContentPage, INotifyPropertyChanged
         timer.Start();
     }
 
-    private void UpdateTimer()
+    /// <summary>
+    /// показ таймера с обратным отсчётом
+    /// </summary>
+    private void UpdateTimer() 
     {
-
         double interval = 100;
         TimeSpan countdown = TimeSpan.FromSeconds(timeRemain);
         timer1 = Dispatcher.CreateTimer();
         timer1.Interval = TimeSpan.FromMilliseconds(interval);
-
 
         timer1.Tick += (s, e) =>
         {
@@ -238,6 +247,9 @@ public partial class LearnPage : ContentPage, INotifyPropertyChanged
                                // Запускаем таймер снова
                 timeRemain = tmpTimeRemain;
                 UpdateTimer();
+                WordToLearn();
+                fillMode_XEnd = _startProgressBarPos;
+                FillGridForChoosenWords();
             }
             else
             {
@@ -309,7 +321,7 @@ public partial class LearnPage : ContentPage, INotifyPropertyChanged
     /// <summary>
     /// method for pause buttn creation
     /// </summary>
-    void PauseBttnCreation()
+    async void PauseBttnCreation()
     {
         var pauseButton = new ToolbarItem()
         {
@@ -317,9 +329,30 @@ public partial class LearnPage : ContentPage, INotifyPropertyChanged
             Priority = 0,
             Order = ToolbarItemOrder.Primary
         };
+        #region для Pause popup окошка
+        // Получаем размеры экрана
+        var screenWidth = Application.Current.MainPage.Width;
+        var screenHeight = Application.Current.MainPage.Height;
+
+        // Уменьшаем размеры на 20 пикселей
+        var width = screenWidth - 60;
+        var height = screenHeight - screenHeight*0.1f;
+
+        // Создаем экземпляр MyContentPage
+        var pauseContentPage = new PauseContent();
+
+        // Устанавливаем размеры
+        pauseContentPage.WidthRequest = width;
+        pauseContentPage.HeightRequest = height;
+
+        pauseContentPage.Title = "Pause";       
+        pauseContentPage.BackgroundColor = Color.FromRgb(100, 0, 100);
+        #endregion
+
         pauseButton.Clicked += async (s, e) =>
         {
-            await DisplayAlert("Pause", "Pause menu", "Cancel");
+            //await DisplayAlert("Pause", "Pause menu", "Cancel");
+            await Navigation.PushModalAsync(pauseContentPage);
         };
         this.ToolbarItems.Add(pauseButton); // Добавляем кнопку на панель навигации
     }

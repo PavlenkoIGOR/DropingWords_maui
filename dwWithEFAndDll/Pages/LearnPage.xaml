@@ -33,7 +33,7 @@
         </AbsoluteLayout>
 
 
-        <Grid x:Name="GridForTranslations" Grid.Row="2">
+        <Grid x:Name="GridForTranslations" Grid.Row="2" Padding="5" RowSpacing="5" ColumnSpacing="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
