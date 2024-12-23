@@ -50,6 +50,25 @@ public partial class DictionaryPage : ContentPage
             watTranslations?.Add(wat);
         }
     }
+
+    private async void ListView_ItemSelected(object sender, SelectedItemChangedEventArgs e)
+    {
+        WordAndTranslations selectedWord = e.SelectedItem as WordAndTranslations;
+		string action = await DisplayActionSheet(selectedWord.word.word, "Cancel", null, "Редактировать", "Удалить");
+		switch (action)
+		{
+			case "Редактировать":
+				await Navigation.PushAsync(new AddWordPage(_dbContext, selectedWord));
+				break;
+			case "Удалить":
+				Word wordDorDelete = await _dbContext.Words.Where(w => w.id == selectedWord.word.id).FirstAsync();
+				_dbContext.Words.Remove(wordDorDelete);
+				await _dbContext.SaveChangesAsync();
+				break;
+			default:
+				break;
+		}
+	}
 }
 /*
  "CREATE INDEX idx_words_first_letter ON Words (LOWER(SUBSTR(word, 1, 1)));"

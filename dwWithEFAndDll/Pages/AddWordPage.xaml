@@ -5,25 +5,25 @@
              Title="AddWordPage">
     <VerticalStackLayout>
         <Label 
-    Text="Enter new word"
-    VerticalOptions="Center" 
-    HorizontalOptions="Center" />
+            Text="Enter new word"
+            VerticalOptions="Center"
+            HorizontalOptions="Center" />
         <Entry
-            x:Name="wordEntryField"
+            x:Name="wordEntryField"            
             Placeholder="Enter new word"
             MaxLength="30"/>
-        <Label 
-    Text="Enter translate"
-    VerticalOptions="Center" 
-    HorizontalOptions="Center" />
+        <Label
+            Margin="20,100,20,0"
+            Text="Enter translate"
+            VerticalOptions="Center"
+            HorizontalOptions="Center" />
         <Entry
             x:Name="translationEntryField"
             Placeholder="Enter translation"
             MaxLength="200"/>
         <Button
-    Text="Write to dictionary"
-    SemanticProperties.Hint="Add new word to dictionary"
-    Clicked="AddNewWordToDictionary"
-    />
+            Text="Write to dictionary"
+            SemanticProperties.Hint="Add new word to dictionary"
+            Clicked="AddNewWordToDictionary"/>
     </VerticalStackLayout>
 </ContentPage>

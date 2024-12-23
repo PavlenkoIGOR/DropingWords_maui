@@ -1,3 +1,4 @@
+using dwWithEFAndDll.ViewModels;
 using MauiLib1.Data;
 using MauiLib1.Models;
 
@@ -6,6 +7,14 @@ namespace dwWithEFAndDll.Pages;
 public partial class AddWordPage : ContentPage
 {
     MyAppDbContext _dbContext;
+    public WordAndTranslations wordAndTranslations { get; set; }
+    public AddWordPage(MyAppDbContext myAppDb, WordAndTranslations wat) : this(myAppDb)
+    {
+        _dbContext = myAppDb;
+        wordAndTranslations = wat;
+        wordEntryField.Text = wat?.word?.word;
+        translationEntryField.Text = wat?.translationsString?.ToString();
+    }
     public AddWordPage(MyAppDbContext myAppDb)
     {
         BindingContext = this;
@@ -25,7 +34,7 @@ public partial class AddWordPage : ContentPage
         }
         List<Translation> newTranslations = new List<Translation>();
 
-        string[] tr = translationEntryField.Text.ToLower().Split(new char[] { ',', ' ', ';' }, StringSplitOptions.RemoveEmptyEntries);
+        string[] tr = translationEntryField.Text.ToLower().Split(new char[] { '.', ';' }, StringSplitOptions.RemoveEmptyEntries);
 
         foreach (var item in tr)
         {

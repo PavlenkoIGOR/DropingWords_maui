@@ -11,6 +11,7 @@
 
         <ListView Grid.Row="1" 
                   ItemsSource="{Binding watTranslations}" 
+                  ItemSelected="ListView_ItemSelected"
                   VerticalOptions="FillAndExpand"
                   HeightRequest="{OnPlatform Android=600, iOS=400, MacCatalyst=400}">
             <ListView.ItemTemplate>
